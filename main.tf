@@ -8,6 +8,11 @@
 #     name       = "EnableAPIServerVnetIntegrationPreview"
 #     registered = true
 #   }
+#
+#   feature {
+#     name       = "KubeletDisk"
+#     registered = true
+#   }
 # }
 
 resource "azurerm_kubernetes_cluster" "cluster" {
@@ -50,9 +55,9 @@ resource "azurerm_kubernetes_cluster" "cluster" {
   # apiserver settings
   #
   api_server_access_profile {
-    subnet_id                = data.azurerm_subnet.api.id
+    subnet_id                = azurerm_subnet.api.id
     vnet_integration_enabled = true
-    authorized_ip_ranges     = local.allowed_cidrs
+    authorized_ip_ranges     = var.private ? null : local.allowed_cidrs
   }
 
   #
@@ -65,7 +70,7 @@ resource "azurerm_kubernetes_cluster" "cluster" {
 
     # network settings
     enable_node_public_ip = false
-    vnet_subnet_id        = data.azurerm_subnet.aks.id
+    vnet_subnet_id        = azurerm_subnet.aks.id
 
     # autoscaling settings
     enable_auto_scaling = local.enable_auto_scaling
@@ -85,6 +90,14 @@ resource "azurerm_kubernetes_cluster" "cluster" {
       image_gc_high_threshold = 75
       image_gc_low_threshold  = 60
       pod_max_pid             = 16384
+    }
+  }
+
+  linux_profile {
+    admin_username = local.ssh_username
+
+    ssh_key {
+      key_data = local.ssh_public_key
     }
   }
 

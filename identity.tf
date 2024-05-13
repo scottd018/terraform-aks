@@ -12,8 +12,14 @@ resource "azurerm_role_assignment" "aks_dns" {
   principal_id         = azurerm_user_assigned_identity.aks.principal_id
 }
 
-resource "azurerm_role_assignment" "aks_vnet" {
-  scope                = data.azurerm_subnet.aks.id
+resource "azurerm_role_assignment" "aks_subnet" {
+  scope                = azurerm_subnet.aks.id
+  role_definition_name = "Network Contributor"
+  principal_id         = azurerm_user_assigned_identity.aks.principal_id
+}
+
+resource "azurerm_role_assignment" "aks_api_subnet" {
+  scope                = azurerm_subnet.api.id
   role_definition_name = "Network Contributor"
   principal_id         = azurerm_user_assigned_identity.aks.principal_id
 }

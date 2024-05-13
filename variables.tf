@@ -55,26 +55,38 @@ variable "vnet_name" {
   }
 }
 
-variable "api_subnet_name" {
+variable "route_table_name" {
   type        = string
-  description = "Subnet name to use for the API endpoint (Must exist within 'vnet_name')"
+  description = "Route table name to use for the worker nodes which are assigned to api/worker subnets. Must be within VNET name. Only required if private = true."
+  default     = null
+}
+
+variable "api_subnet_cidr" {
+  type        = string
+  description = "Subnet CIDR to use for the API endpoint (Must exist within 'vnet_name')"
   default     = null
 
   validation {
-    condition     = var.api_subnet_name != "" && var.api_subnet_name != null
-    error_message = "Invalid 'api_subnet_name'. Must be not be empty."
+    condition     = var.api_subnet_cidr != "" && var.api_subnet_cidr != null
+    error_message = "Invalid 'api_subnet_cidr'. Must be not be empty."
   }
 }
 
-variable "subnet_name" {
+variable "subnet_cidr" {
   type        = string
-  description = "Subnet name to use for the worker nodes (Must exist within 'vnet_name')"
+  description = "Subnet CIDR to use for the worker nodes (Must exist within 'vnet_name')"
   default     = null
 
   validation {
-    condition     = var.subnet_name != "" && var.subnet_name != null
-    error_message = "Invalid 'subnet_name'. Must be not be empty."
+    condition     = var.subnet_cidr != "" && var.subnet_cidr != null
+    error_message = "Invalid 'subnet_cidr'. Must be not be empty."
   }
+}
+
+variable "bastion_cidr" {
+  type        = string
+  description = "Subnet CIDR to use for the bastion/cloudshell (Must exist within 'vnet_name')"
+  default     = null
 }
 
 #
@@ -135,25 +147,8 @@ variable "worker_disk_size_gb" {
   }
 }
 
-# variable "aks_admin_username" {
-#   type        = string
-#   default     = "aks-user"
-#   description = "Admin username for the AKS worker nodes"
-#   sensitive   = true
-
-#   validation {
-#     condition     = var.aks_admin_username != "" && var.aks_admin_username != null
-#     error_message = "Invalid 'aks_admin_username'. Must be not be empty."
-#   }
-# }
-
-# variable "aks_admin_password" {
-#   type        = string
-#   description = "Admin passoword for the AKS worker nodes"
-#   sensitive   = true
-
-#   validation {
-#     condition     = var.aks_admin_password != "" && var.aks_admin_password != null
-#     error_message = "Invalid 'aks_admin_password'. Must be not be empty."
-#   }
-# }
+variable "worker_ssh_public_key" {
+  type        = string
+  default     = null
+  description = "SSH public key for worker node connectivity (use user 'aks-user' to connect with your associated private key)."
+}

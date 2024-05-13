@@ -3,5 +3,9 @@ locals {
 
   # networking
   vnet_resource_group = var.vnet_resource_group == "" || var.vnet_resource_group == null ? var.cluster_resource_group : var.vnet_resource_group
-  allowed_cidrs       = length(var.additional_cidr_blocks) > 0 ? concat(var.additional_cidr_blocks, data.azurerm_subnet.aks.address_prefixes) : data.azurerm_subnet.aks.address_prefixes
+  allowed_cidrs       = length(var.additional_cidr_blocks) > 0 ? concat(var.additional_cidr_blocks, azurerm_subnet.aks.address_prefixes) : azurerm_subnet.aks.address_prefixes
+
+  # ssh
+  ssh_public_key = var.worker_ssh_public_key == "" || var.worker_ssh_public_key == null ? null : var.worker_ssh_public_key
+  ssh_username   = var.worker_ssh_public_key == "" || var.worker_ssh_public_key == null ? null : "aks-user"
 }
